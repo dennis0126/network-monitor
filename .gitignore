@@ -1,2 +1,8 @@
 # IDE
 .idea
+
+# Env
+.env
+
+# SQLC genereated code
+/db
