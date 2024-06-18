@@ -1,8 +1,16 @@
-# IDE
+# IDE specific files
+.vscode
 .idea
 
-# Env
+# .env file
 .env
+
+# Go workspace file
+#go.work
+tmp/
+
+# built files
+/bin
 
 # SQLC genereated code
 /internal/db
