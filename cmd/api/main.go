@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
+	"github.com/dennis0126/network-monitor/internal/config"
 	"github.com/dennis0126/network-monitor/internal/controller"
 	"github.com/dennis0126/network-monitor/internal/db"
+	"github.com/dennis0126/network-monitor/internal/repository"
 	"github.com/dennis0126/network-monitor/internal/service"
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"os"
-
-	"github.com/dennis0126/network-monitor/internal/repository"
 	"github.com/labstack/echo/v4/middleware"
+	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -27,9 +27,11 @@ func main() {
 		return ctx.String(http.StatusOK, "Hello")
 	})
 
+	cfg := config.InitConfig()
+
 	// database connection
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, os.Getenv("DB_STRING"))
+	conn, err := pgx.Connect(ctx, cfg.DbString)
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
@@ -47,5 +49,5 @@ func main() {
 
 	userController.RegisterRoutes(e)
 
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(":" + strconv.Itoa(cfg.Port)))
 }
