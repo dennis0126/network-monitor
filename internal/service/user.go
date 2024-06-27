@@ -16,3 +16,7 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 func (s UserService) ListUsers() ([]model.User, error) {
 	return s.userRepo.ListUsers()
 }
+
+func (s UserService) GetUserByName(name string) (*model.User, error) {
+	return s.userRepo.GetUserByName(name)
+}

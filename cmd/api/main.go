@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/dennis0126/network-monitor/internal/config"
 	"github.com/dennis0126/network-monitor/internal/controller"
 	"github.com/dennis0126/network-monitor/internal/db"
@@ -42,14 +43,28 @@ func main() {
 
 	// repository
 	userRepository := repository.NewUserRepository(ctx, queries)
+	sessionRepository := repository.NewSessionRepository(ctx, queries)
 
 	// service
 	userService := service.NewUserService(userRepository)
+	authService := service.NewAuthService(sessionRepository, userService)
 
 	// controller
 	userController := controller.NewUserController(userService)
+	authController := controller.NewAuthController(authService)
 
 	userController.RegisterRoutes(e)
+	authController.RegisterRoutes(e)
+
+	fmt.Println(getRoutesAsString(e))
 
 	e.Logger.Fatal(e.Start(":" + strconv.Itoa(cfg.Port)))
+}
+
+func getRoutesAsString(e *echo.Echo) string {
+	var result string
+	for _, route := range e.Routes() {
+		result += fmt.Sprintf("%s %s -> %s\n", route.Method, route.Path, route.Name)
+	}
+	return result
 }

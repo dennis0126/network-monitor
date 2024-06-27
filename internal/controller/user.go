@@ -17,7 +17,7 @@ func NewUserController(userService service.UserService) UserController {
 }
 
 func (c UserController) RegisterRoutes(e *echo.Echo) {
-	userRouteGroup := e.Group("users")
+	userRouteGroup := e.Group("/users")
 	userRouteGroup.GET("", c.ListUsers)
 }
 
