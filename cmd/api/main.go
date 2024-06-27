@@ -29,6 +29,8 @@ func main() {
 
 	cfg := config.InitConfig()
 
+	e.Validator = controller.NewValidator()
+
 	// database connection
 	ctx := context.Background()
 	conn, err := pgx.Connect(ctx, cfg.DbString)
