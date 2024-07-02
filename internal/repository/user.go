@@ -6,6 +6,7 @@ import (
 	"github.com/dennis0126/network-monitor/internal/db"
 	"github.com/dennis0126/network-monitor/internal/model"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserRepository struct {
@@ -15,6 +16,18 @@ type UserRepository struct {
 
 func NewUserRepository(ctx context.Context, queries *db.Queries) UserRepository {
 	return UserRepository{ctx: ctx, queries: queries}
+}
+
+func (r UserRepository) CreateUser(user model.User) (model.User, error) {
+	dbUser, err := r.queries.CreateUser(r.ctx, db.CreateUserParams{
+		ID: user.ID, Name: user.Name, PasswordHash: user.PasswordHash,
+		CreatedAt: pgtype.Timestamp{Time: user.CreatedAt, Valid: true},
+		UpdatedAt: pgtype.Timestamp{Time: user.UpdatedAt, Valid: true},
+	})
+	if err != nil {
+		return model.User{}, err
+	}
+	return unmarshallDbUser(dbUser), nil
 }
 
 func (r UserRepository) ListUsers() ([]model.User, error) {

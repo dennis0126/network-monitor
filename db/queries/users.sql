@@ -1,3 +1,8 @@
+-- name: CreateUser :one
+INSERT INTO users (id, name, password_hash, created_at, updated_at)
+values (sqlc.arg(id), sqlc.arg(name), sqlc.arg(password_hash), sqlc.arg(created_at), sqlc.arg(updated_at))
+RETURNING *;
+
 -- name: ListUsers :many
 SELECT *
 FROM users;
