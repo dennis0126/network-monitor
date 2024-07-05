@@ -21,8 +21,8 @@ func NewUserRepository(ctx context.Context, queries *db.Queries) UserRepository 
 func (r UserRepository) CreateUser(user model.User) (model.User, error) {
 	dbUser, err := r.queries.CreateUser(r.ctx, db.CreateUserParams{
 		ID: user.ID, Name: user.Name, PasswordHash: user.PasswordHash,
-		CreatedAt: pgtype.Timestamp{Time: user.CreatedAt, Valid: true},
-		UpdatedAt: pgtype.Timestamp{Time: user.UpdatedAt, Valid: true},
+		CreatedAt: pgtype.Timestamptz{Time: user.CreatedAt, Valid: true},
+		UpdatedAt: pgtype.Timestamptz{Time: user.UpdatedAt, Valid: true},
 	})
 	if err != nil {
 		return model.User{}, err
