@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/a-h/templ"
 	"github.com/dennis0126/network-monitor/internal/config"
 	"github.com/dennis0126/network-monitor/internal/controller"
 	"github.com/dennis0126/network-monitor/internal/db"
 	"github.com/dennis0126/network-monitor/internal/repository"
 	"github.com/dennis0126/network-monitor/internal/service"
+	"github.com/dennis0126/network-monitor/internal/view"
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
 	"strconv"
 )
 
@@ -23,10 +24,6 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Gzip())
-
-	e.GET("/", func(ctx echo.Context) error {
-		return ctx.String(http.StatusOK, "Hello")
-	})
 
 	cfg := config.InitConfig()
 
@@ -48,13 +45,14 @@ func main() {
 	// service
 	userService := service.NewUserService(userRepository)
 	authService := service.NewAuthService(sessionRepository, userService)
-
 	// controller
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(authService)
 
 	userController.RegisterRoutes(e)
 	authController.RegisterRoutes(e)
+
+	e.GET("/", echo.WrapHandler(templ.Handler(view.Index())))
 
 	fmt.Println(getRoutesAsString(e))
 

@@ -4,6 +4,7 @@
 
 - Go 1.21.1 ([Installation](https://go.dev/doc/install))
 - Atlas ([Installation](https://atlasgo.io/getting-started/))
+- Templ ([Installation](https://templ.guide/quick-start/installation))
 
 ### Switching environments
 
