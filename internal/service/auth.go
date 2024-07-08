@@ -4,7 +4,9 @@ import (
 	"errors"
 	"github.com/dennis0126/network-monitor/internal/model"
 	"github.com/dennis0126/network-monitor/internal/repository"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 var ErrAuthFailed = errors.New("authentication failed")
@@ -38,7 +40,8 @@ func (s AuthService) Login(param LoginParam) (model.Session, error) {
 		return model.Session{}, ErrAuthFailed
 	}
 
-	session, err := s.sessionRepo.CreateSession(user.ID, param.IpAddress, param.UserAgent)
+	id := uuid.New().String()
+	session, err := s.sessionRepo.CreateSession(id, user.ID, param.IpAddress, param.UserAgent, time.Now())
 	if err != nil {
 		return model.Session{}, err
 	}
@@ -52,6 +55,10 @@ func (s AuthService) Logout(sessionId string) error {
 		return err
 	}
 	return nil
+}
+
+func (s AuthService) GetSessionById(sessionId string) (*model.Session, error) {
+	return s.sessionRepo.GetSessionById(sessionId)
 }
 
 func checkPasswordHash(password, hash string) bool {

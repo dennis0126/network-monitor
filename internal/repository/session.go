@@ -2,8 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"github.com/dennis0126/network-monitor/internal/db"
 	"github.com/dennis0126/network-monitor/internal/model"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 type SessionRepository struct {
@@ -15,20 +19,27 @@ func NewSessionRepository(ctx context.Context, queries *db.Queries) SessionRepos
 	return SessionRepository{ctx: ctx, queries: queries}
 }
 
-func (r SessionRepository) CreateSession(userId string, ipAddress string, userAgent string) (model.Session, error) {
-	dbSession, err := r.queries.CreateSession(r.ctx, db.CreateSessionParams{UserID: userId, IpAddress: ipAddress, UserAgent: userAgent})
+func (r SessionRepository) CreateSession(id string, userId string, ipAddress string, userAgent string, lastActivity time.Time) (model.Session, error) {
+	dbSession, err := r.queries.CreateSession(r.ctx, db.CreateSessionParams{
+		ID: id, UserID: userId, IpAddress: ipAddress, UserAgent: userAgent, LastActivity: pgtype.Timestamptz{Time: lastActivity, Valid: true},
+	})
 	if err != nil {
 		return model.Session{}, err
 	}
 	return unmarshallDbSession(dbSession), nil
 }
 
-func (r SessionRepository) GetSessionById(id string) (model.Session, error) {
+func (r SessionRepository) GetSessionById(id string) (*model.Session, error) {
 	dbSession, err := r.queries.GetSessionById(r.ctx, id)
 	if err != nil {
-		return model.Session{}, err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return &model.Session{}, err
 	}
-	return unmarshallDbSession(dbSession), nil
+
+	session := unmarshallDbSession(dbSession)
+	return &session, nil
 }
 
 func (r SessionRepository) DeleteSessionById(id string) error {
