@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/dennis0126/network-monitor/internal/service"
 	"github.com/dennis0126/network-monitor/internal/utils"
+	"github.com/dennis0126/network-monitor/internal/view"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -21,8 +22,12 @@ func NewAuthController(authService service.AuthService, userService service.User
 }
 
 func (c AuthController) RegisterRoutes(e *echo.Echo) {
-	authRouteGroup := e.Group("/auth")
-	authRouteGroup.POST("/login", c.Login)
+	e.GET("/login", c.LoginView)
+	e.POST("/login", c.Login)
+}
+
+func (c AuthController) LoginView(ctx echo.Context) error {
+	return render(ctx, http.StatusOK, view.Login())
 }
 
 type LoginDto struct {
@@ -79,14 +84,14 @@ func (c AuthController) SessionAuth(config SessionAuthConfig) echo.MiddlewareFun
 
 			sessionId, err := ctx.Cookie(sessionIdCookieName)
 			if err != nil {
-				return ctx.Redirect(http.StatusTemporaryRedirect, "/")
+				return ctx.Redirect(http.StatusTemporaryRedirect, "/login")
 			}
 			session, err := c.authService.GetSessionById(sessionId.Value)
 			if err != nil {
 				return err
 			}
 			if session == nil {
-				return ctx.Redirect(http.StatusTemporaryRedirect, "/")
+				return ctx.Redirect(http.StatusTemporaryRedirect, "/login")
 			}
 
 			user, err := c.userService.GetUserById(session.UserID)

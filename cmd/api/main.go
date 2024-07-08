@@ -3,16 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/a-h/templ"
 	"github.com/dennis0126/network-monitor/internal/config"
 	"github.com/dennis0126/network-monitor/internal/controller"
 	"github.com/dennis0126/network-monitor/internal/db"
 	"github.com/dennis0126/network-monitor/internal/repository"
 	"github.com/dennis0126/network-monitor/internal/service"
-	"github.com/dennis0126/network-monitor/internal/view"
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -46,14 +45,17 @@ func main() {
 	// service
 	userService := service.NewUserService(userRepository)
 	authService := service.NewAuthService(sessionRepository, userService)
+
 	// controller
 	userController := controller.NewUserController(userService)
 	authController := controller.NewAuthController(authService, userService)
+	dashboardController := controller.NewDashboardController()
 
 	userController.RegisterRoutes(e)
 	authController.RegisterRoutes(e)
+	dashboardController.RegisterRoutes(e)
 
-	e.GET("/", echo.WrapHandler(templ.Handler(view.Index())))
+	e.GET("/", func(ctx echo.Context) error { return ctx.Redirect(http.StatusTemporaryRedirect, "/dashboard") })
 	e.Use(authController.SessionAuth(controller.SessionAuthConfig{Skipper: func(c echo.Context) bool {
 		return strings.Contains(c.Path(), "login")
 	}}))

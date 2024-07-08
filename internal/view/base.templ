@@ -1,6 +1,6 @@
 package view
 
-templ Index() {
+templ Base() {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -8,6 +8,8 @@ templ Index() {
 			<title>Network Monitor</title>
 			<script src="https://unpkg.com/htmx.org@2.0.0"></script>
 		</head>
-		<body>Nice god</body>
+		<body>
+			{ children... }
+		</body>
 	</html>
 }
