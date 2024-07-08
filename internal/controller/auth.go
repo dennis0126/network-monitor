@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+var sessionIdCookieName = "SessionId"
+
 type AuthController struct {
 	authService service.AuthService
 	userService service.UserService
@@ -46,7 +48,7 @@ func (c AuthController) Login(ctx echo.Context) error {
 	}
 
 	cookie := http.Cookie{
-		Name:     "SessionId",
+		Name:     sessionIdCookieName,
 		Value:    session.ID,
 		Path:     "/",
 		Secure:   true,
@@ -75,7 +77,7 @@ func (c AuthController) SessionAuth(config SessionAuthConfig) echo.MiddlewareFun
 				return next(ctx)
 			}
 
-			sessionId, err := ctx.Cookie("SessionId")
+			sessionId, err := ctx.Cookie(sessionIdCookieName)
 			if err != nil {
 				return ctx.Redirect(http.StatusTemporaryRedirect, "/")
 			}
