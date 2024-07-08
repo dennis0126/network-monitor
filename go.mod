@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/a-h/templ v0.2.747
-	github.com/caarlos0/env/v11 v11.0.1
+	github.com/caarlos0/env/v11 v11.1.0
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
