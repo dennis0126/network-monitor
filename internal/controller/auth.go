@@ -43,11 +43,13 @@ func (c AuthController) Login(ctx echo.Context) error {
 		return err
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "SessionId"
-	cookie.Value = session.ID
-	cookie.Secure = true
-	cookie.HttpOnly = true
-	ctx.SetCookie(cookie)
+	cookie := http.Cookie{
+		Name:     "SessionId",
+		Value:    session.ID,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	}
+	ctx.SetCookie(&cookie)
 	return ctx.JSON(http.StatusOK, nil)
 }
