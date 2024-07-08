@@ -5,15 +5,17 @@ import (
 	"github.com/dennis0126/network-monitor/internal/service"
 	"github.com/dennis0126/network-monitor/internal/utils"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 )
 
 type AuthController struct {
 	authService service.AuthService
+	userService service.UserService
 }
 
-func NewAuthController(authService service.AuthService) AuthController {
-	return AuthController{authService: authService}
+func NewAuthController(authService service.AuthService, userService service.UserService) AuthController {
+	return AuthController{authService: authService, userService: userService}
 }
 
 func (c AuthController) RegisterRoutes(e *echo.Echo) {
@@ -52,4 +54,43 @@ func (c AuthController) Login(ctx echo.Context) error {
 	}
 	ctx.SetCookie(&cookie)
 	return ctx.JSON(http.StatusOK, nil)
+}
+
+type SessionAuthConfig struct {
+	Skipper middleware.Skipper
+}
+
+var DefaultSessionAuthConfig = SessionAuthConfig{
+	Skipper: middleware.DefaultSkipper,
+}
+
+func (c AuthController) SessionAuth(config SessionAuthConfig) echo.MiddlewareFunc {
+	if config.Skipper == nil {
+		config.Skipper = DefaultSessionAuthConfig.Skipper
+	}
+
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(ctx echo.Context) error {
+			if config.Skipper(ctx) {
+				return next(ctx)
+			}
+
+			sessionId, err := ctx.Cookie("SessionId")
+			if err != nil {
+				return ctx.Redirect(http.StatusTemporaryRedirect, "/")
+			}
+			session, err := c.authService.GetSessionById(sessionId.Value)
+			if err != nil {
+				return err
+			}
+			if session == nil {
+				return ctx.Redirect(http.StatusTemporaryRedirect, "/")
+			}
+
+			user, err := c.userService.GetUserById(session.UserID)
+			ctx.Set("user", user)
+
+			return next(ctx)
+		}
+	}
 }

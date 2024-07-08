@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -47,12 +48,15 @@ func main() {
 	authService := service.NewAuthService(sessionRepository, userService)
 	// controller
 	userController := controller.NewUserController(userService)
-	authController := controller.NewAuthController(authService)
+	authController := controller.NewAuthController(authService, userService)
 
 	userController.RegisterRoutes(e)
 	authController.RegisterRoutes(e)
 
 	e.GET("/", echo.WrapHandler(templ.Handler(view.Index())))
+	e.Use(authController.SessionAuth(controller.SessionAuthConfig{Skipper: func(c echo.Context) bool {
+		return strings.Contains(c.Path(), "login")
+	}}))
 
 	fmt.Println(getRoutesAsString(e))
 
