@@ -43,22 +43,26 @@ func (r UserRepository) ListUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func (r UserRepository) GetUserById(id string) (model.User, error) {
+func (r UserRepository) GetUserById(id string) (*model.User, error) {
 	dbUser, err := r.queries.GetUserById(r.ctx, id)
 	if err != nil {
-		return model.User{}, err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
 	}
 
-	return unmarshallDbUser(dbUser), nil
+	user := unmarshallDbUser(dbUser)
+	return &user, nil
 }
 
 func (r UserRepository) GetUserByName(name string) (*model.User, error) {
 
 	dbUser, err := r.queries.GetUserByName(r.ctx, name)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, nil
-	}
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

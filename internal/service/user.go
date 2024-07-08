@@ -29,6 +29,10 @@ func (s UserService) ListUsers() ([]model.User, error) {
 	return s.userRepo.ListUsers()
 }
 
+func (s UserService) GetUserById(id string) (*model.User, error) {
+	return s.userRepo.GetUserByName(id)
+}
+
 func (s UserService) GetUserByName(name string) (*model.User, error) {
 	return s.userRepo.GetUserByName(name)
 }
