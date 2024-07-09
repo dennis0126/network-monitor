@@ -31,8 +31,8 @@ func (c AuthController) LoginView(ctx echo.Context) error {
 }
 
 type LoginDto struct {
-	Name     string `json:"name" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Name     string `json:"name" form:"name" validate:"required"`
+	Password string `json:"password" form:"password" validate:"required"`
 }
 
 func (c AuthController) Login(ctx echo.Context) error {
@@ -60,7 +60,7 @@ func (c AuthController) Login(ctx echo.Context) error {
 		HttpOnly: true,
 	}
 	ctx.SetCookie(&cookie)
-	return ctx.JSON(http.StatusOK, nil)
+	return ctx.Redirect(http.StatusSeeOther, "/")
 }
 
 type SessionAuthConfig struct {
