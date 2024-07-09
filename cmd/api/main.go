@@ -29,6 +29,9 @@ func main() {
 
 	e.Validator = controller.NewValidator()
 
+	// static files
+	e.Static("/static", "static")
+
 	// database connection
 	ctx := context.Background()
 	conn, err := pgx.Connect(ctx, cfg.DbString)
@@ -57,7 +60,7 @@ func main() {
 
 	e.GET("/", func(ctx echo.Context) error { return ctx.Redirect(http.StatusTemporaryRedirect, "/dashboard") })
 	e.Use(authController.SessionAuth(controller.SessionAuthConfig{Skipper: func(c echo.Context) bool {
-		return strings.Contains(c.Path(), "login")
+		return strings.Contains(c.Path(), "static") || strings.Contains(c.Path(), "login")
 	}}))
 
 	fmt.Println(getRoutesAsString(e))
