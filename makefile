@@ -2,7 +2,7 @@
 all: build
 
 #build: build-templ build-tailwind
-build: build-templ
+build: build-templ build-tailwind
 	@echo "Building go binaries..."
 	@go build -o bin/api/main cmd/api/main.go
 
@@ -10,9 +10,9 @@ build-templ:
 	@echo "Building templ views..."
 	@templ generate
 
-#build-tailwind:
-#	@echo "Building tailwindcss..."
-#	@tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css
+build-tailwind:
+	@echo "Building tailwindcss..."
+	@tailwindcss -i static/assets/css/input.css -o static/assets/css/output.css
 
 sqlc-generate:
 	go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate -f db/sqlc.yml

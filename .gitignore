@@ -17,3 +17,6 @@ tmp/
 
 # Templ generated code
 *_templ.go
+
+# tailwindcss generated code
+static/assets/css/output.css
