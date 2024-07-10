@@ -1,0 +1,11 @@
+package view
+
+import "github.com/dennis0126/network-monitor/internal/view/component"
+
+templ ApplicationShell() {
+	@Base() {
+		@component.NavMenu() {
+			{ children... }
+		}
+	}
+}
