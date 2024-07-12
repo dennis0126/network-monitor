@@ -1,5 +1,6 @@
-h1:Zip/5hqVnoRi/BTmB76IgFW0gaZ9JfQ1mHJWmRSMXbM=
+h1:IpIw+v6DcWRMk6O1CePp/XtzfRIE8x2kPfXshQALe3I=
 20240513090029_initial.sql h1:wx2OFc1RhYpDFbyutqAfx5sOicR3lLNGNaay5CcWYSo=
 20240621045001_add_sessions.sql h1:Lkx/zbXk4DrV+/JB4WWkNWcbeCu1DzbCap30ftsVgII=
 20240621103525_rename_columns.sql h1:dTIp2YVyRV9zxli4rdE9XwYpH/kS83Dluak6Bt2LZws=
 20240702101634_timestamp_add_time_zone.sql h1:/q6HEMcNm2VUXCFb39C8mB3kl6ThMsCM1SFIcbNBqg4=
+20240712050324_connection_types.sql h1:1taT4GBt0cihm6UoAQWWyRiELlPbN03L6yoGLQQ540c=
