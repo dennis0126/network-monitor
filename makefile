@@ -1,3 +1,10 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+.PHONY: all build build-templ build-tailwind sqlc-generate migrate-diff watch
+
 # Build the application
 all: build
 
@@ -16,6 +23,12 @@ build-tailwind:
 
 sqlc-generate:
 	go run github.com/sqlc-dev/sqlc/cmd/sqlc@latest generate -f db/sqlc.yml
+
+migrate-diff:
+ifndef NAME
+	$(error NAME is not set)
+endif
+	@atlas migrate diff -c file://db/atlas.hcl --env local $(NAME)
 
 # Live Reload
 watch:
